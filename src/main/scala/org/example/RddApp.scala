@@ -1,16 +1,26 @@
 package org.example
 
+import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
 
 import scala.collection.mutable.ArrayBuffer
 
 case class AggrData(chnlList: ArrayBuffer[String], clkCntList: ArrayBuffer[Long])
+
 object RddApp {
 
   def main(args: Array[String]) = {
-    val spark = SparkSession.builder().getOrCreate()
+    val conf = new SparkConf()
+    conf.set("hive.metastore.uris", "thrift://10.106.4.19:9083")
+    val spark = SparkSession.builder().config(conf).enableHiveSupport().getOrCreate()
 
-    val df = spark.read.orc("hdfs://matching/user/hive/warehouse/ssa_brand.db/t_imp_clk_ssa/ymd=2021-05-*")
+    val df = spark.sql(
+      s"""
+         |SELECT ymd, chnl_id, clk_cnt
+         |FROM ssa_brand.t_imp_clk_ssa
+         |WHERE ymd >= '2021-05-01' and ymd <= '2021-05-30'
+         |""".stripMargin)
+
     val rdd = df.rdd.map{ row =>
       val chnlId = row.getAs[String]("chnl_id")
       val clkCnt = row.getAs[Long]("clk_cnt")
