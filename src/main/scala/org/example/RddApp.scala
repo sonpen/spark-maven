@@ -35,7 +35,7 @@ object RddApp {
       val quaterClkCnt = sortedList(listCnt/4)
       val threeQuaterClkCnt = sortedList(listCnt/4*3)
 
-      ymd + "," + chnlCnt + "," + maxClkCnt + "," + quaterClkCnt + "," + medianClkCnt + "," + threeQuaterClkCnt + "," + avgClkCnt)
+      ymd + "," + chnlCnt + "," + maxClkCnt + "," + quaterClkCnt + "," + medianClkCnt + "," + threeQuaterClkCnt + "," + avgClkCnt
     }
 
     import spark.implicits._
