@@ -10,11 +10,11 @@ spark = SparkSession.builder \
 df = spark.sql("""
 SELECT ymd, chnl_id, clk_cnt
 FROM ssa_brand.t_imp_clk_ssa
-WHERE ymd >= '2021-05-01' and ymd <= '2021-05-31'
+WHERE ymd = '2021-05-01'
 """)
 
 rdd = df.rdd.map( lambda row : (row.ymd, ([row.chnl_id], [row.clk_cnt])))
-reducedRdd = rdd.reduceByKey(lambda d1, d2 : d1 + d2)
+reducedRdd = rdd.reduceByKey(lambda t1, t2 : (t1[0]+t2[0], t1[1]+t2[1]))
 
 def func(t):
     ymd = t[0]
@@ -32,4 +32,5 @@ def func(t):
 
 resultRdd = reducedRdd.map(lambda t: func(t))
 
-resultRdd.toDF().write.mode("overwrite").text("/user/irteam/ikjuson/spark_perf/python_rdd")
+resultDf = spark.createDataFrame(resultRdd, StringType())
+resultDf.write.mode("overwrite").text("/user/irteam/ikjuson/spark_perf/python_rdd")

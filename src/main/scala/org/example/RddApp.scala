@@ -18,7 +18,7 @@ object RddApp {
       s"""
          |SELECT ymd, chnl_id, clk_cnt
          |FROM ssa_brand.t_imp_clk_ssa
-         |WHERE ymd >= '2021-05-01' and ymd <= '2021-05-30'
+         |WHERE ymd = '2021-05-01'
          |""".stripMargin)
 
     val rdd = df.rdd.map{ row =>
